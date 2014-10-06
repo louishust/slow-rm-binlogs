@@ -13,6 +13,7 @@ usage(){
 sfile=$1
 efile=$2
 filename=$1
+purgefile=$2
 
 get_next() {
     num=`echo $filename | awk -F. '{print $2}' | grep -o '[^0].*' `
@@ -28,7 +29,6 @@ get_next() {
     fi
     filename=${prefix}"."
     filename=${filename}${num}
-    echo $filename
 }
 
 run() {
@@ -39,6 +39,8 @@ run() {
         fi
         filenames[${#filenames[@]}]=$filename
         if [ "$filename" = "$efile" ];then
+            get_next
+            purgefile=$filename
             break;
         fi
         get_next
@@ -60,6 +62,12 @@ run() {
         * ) echo "Please answer yes or no.";;
       esac
     done
+
+    echo "$i binary log files have been removed."
+    echo "Execute the following command in MySQL:"
+    echo "======================================"
+    echo "mysql> purge binary logs to $purgefile"
+    echo "======================================"
 }
 
 remove_files(){
